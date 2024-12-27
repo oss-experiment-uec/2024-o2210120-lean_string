@@ -25,5 +25,5 @@ case "$choice" in
         ;;
 esac
 
-message "cargo miri test --target i686-unknown-linux-gnu"
-cargo +nightly miri test --target i686-unknown-linux-gnu
+message "cargo miri test --target i686-unknown-linux-gnu --all-features"
+cargo +nightly miri test --target i686-unknown-linux-gnu --all-features

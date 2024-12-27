@@ -22,7 +22,7 @@
 
 ### 概要
 
-Miri を使用する。
+[Miri](https://github.com/rust-lang/miri) を使用する。
 Miri は Rust 言語の中間表現レベルでのインタプリタであり、複数のターゲットのエミュレートや未定義動作の実行時検出が可能なソフトウェアである。
 Rust チームが公式で開発しており、標準ライブラリやその他多くのライブラリのテストで利用されている。
 
@@ -51,22 +51,43 @@ Select implementation to test (before/after):
 Select implementation to test (before/after): before
 ==> cd /workspace/before
 /workspace/before
-==> cargo miri test --target i686-unknown-linux-gnu
+==> cargo miri test --target i686-unknown-linux-gnu --all-features
 ....ログがたくさん出る
 error: could not compile `lean_string` (lib) due to 80 previous errors; 1 warning emitted
 warning: build failed, waiting for other jobs to finish..
 ```
 
-after を選択し、全てパスすれば良い。(まだ実装が終わっていないため、現状はエラーになります。)
+after を選択し、全てパスすれば良い。
 
 ```console
-TODO
+Select implementation to test (before/after): after
+==> cd /workspace/after
+/workspace/after
+==> cargo miri test --target i686-unknown-linux-gnu --all-features
+....ログがたくさん出る
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.47s
 ```
+
+テストは複数存在するため上記のような `test result: ok.` が複数個表示される。
+また、いくつかのテストケースは `ignored` となるが、これは問題ない。
+
+もし仮にエラーが発生した場合はそのテストで停止し `error: test failed` と表示されるのですぐに気がつく
+今回は正しく改変されるはずなのでこれは表示されないはずである。
 
 ## 制限と展望
 
-TODO
+この評価で使用した Miri によるテストでは、リポジトリ内に存在するテストケースを全て実行できていない。これは意図的である。
+並列プログラムテストツールである [Loom](https://github.com/tokio-rs/loom) を使用したテストケースと [Proptest](https://github.com/proptest-rs/proptest) を使用したテストケースが実行されていない。
+理由は、
+
+1. 今回の変更箇所により、これらテストケースが失敗するようになるとは考えにく、
+2. それよりもメモリの不正操作や未定義動作を起こしてしまう可能性が高い。
+3. また、Miri に加えて Loom のテストも行うと「評価」にかかる時間が長くなってしまう。
+
+というものである。なお、これらについてはローカルではテストしてあり、全てパスしている。
 
 ## 更なる使い方
 
-TODO
+今回の変更を含めたものが [lean_string v0.3.0](https://docs.rs/lean_string/0.3.0/lean_string/) としてリリース済みである。
+Cargo.toml に `lean_string = "0.3.0"` を追加して利用可能である。
+各種メソッドの使用方法は[ドキュメント](https://docs.rs/lean_string/0.3.0/lean_string/struct.LeanString.html)を参照。
