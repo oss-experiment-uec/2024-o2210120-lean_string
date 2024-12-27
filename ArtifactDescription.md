@@ -74,6 +74,37 @@ test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 もし仮にエラーが発生した場合はそのテストで停止し `error: test failed` と表示されるのですぐに気がつく
 今回は正しく改変されるはずなのでこれは表示されないはずである。
 
+### テストケース
+
+使用されたテストケースが記述されたファイルは tests ディレクトリ以下に格納されている
+
+以下の例では改変後のリポジトリ以下に移動し、cat で内容を確認している。
+
+```console
+$ docker run -it --rm --name lean_string ryota2357/oss-experiment-uec-2024-lean_string bash
+root@09ac733d95b8:/workspace# ls
+after  before  run_tests.sh
+root@09ac733d95b8:/workspace# cd after/tests/
+root@09ac733d95b8:/workspace/after/tests# ls
+alloc_string.rs  arbitrary.rs  handmade.rs  loom.rs  property.rs  serde.rs
+root@09ac733d95b8:/workspace/after/tests# cat handmade.rs
+use lean_string::LeanString;
+
+const INLINE_LIMIT: usize = size_of::<LeanString>();
+
+#[test]
+fn new_empty() {
+    assert_eq!(LeanString::new(), "");
+
+    let s = LeanString::new();
+    assert_eq!(s.as_str(), "");
+    assert!(s.is_empty());
+    assert_eq!(s.len(), 0);
+    assert!(!s.is_heap_allocated());
+    assert_eq!(s.capacity(), INLINE_LIMIT);
+...省略
+```
+
 ## 制限と展望
 
 この評価で使用した Miri によるテストでは、リポジトリ内に存在するテストケースを全て実行できていない。これは意図的である。
