@@ -34,8 +34,8 @@ Rust チームが公式で開発しており、標準ライブラリやその他
 
 ### 評価を行う
 
-Docker イメージは既に Docker Hub に上がっているのでそれを使用する。
-なおイメージを作成するのに使われた Dockerfile は [ArtifactEvaluation/Dockerfile](./ArtifactEvaluation/Dockerfile) である。
+Docker イメージは既に [Docker Hub に上がっている](https://hub.docker.com/r/ryota2357/oss-experiment-uec-2024-lean_string)のでそれを使用する。
+なおイメージを作成するのに使われた Dockerfile は [ArtifactEvaluation/Dockerfile](./ArtifactEvaluation/Dockerfile)、サポートしているアーキテクチャは amd64 と arm64 である。
 
 次のようにして、Docker イメージを pull して run する。
 
